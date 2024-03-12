@@ -1,0 +1,19 @@
+{
+  "name": "darkanddarkertracker-helper",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "watch": "vite build --watch",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4",
+    "vite-plugin-monkey": "^4.0.4"
+  }
+}
