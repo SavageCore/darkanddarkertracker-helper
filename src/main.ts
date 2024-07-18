@@ -241,6 +241,7 @@ const addSubMenu = (menu: HTMLElement) => {
     submenu.role = 'menu';
     // submenu.id = 'rc-menu-uuid-22873-1-sub1-popup';
     submenu.dataset.menuList = 'true';
+    submenu.id = 'sc-profiles-submenu';
 
     const submenuItem: HTMLLIElement = document.createElement('li');
     submenuItem.role = 'menuitem';
@@ -379,6 +380,24 @@ const addMenu = () => {
     menuAdded = true;
 }
 
+const highlightCurrentProfile = () => {
+    const currentProfile = localStorage.getItem(currentProfileKey);
+
+    const submenu = document.querySelector('#sc-profiles-submenu') as HTMLUListElement;
+    const currentProfileMenuItem = document.querySelector(`[data-profile-id="${currentProfile}"]`) as HTMLLIElement;
+
+    if (!currentProfileMenuItem) {
+        return;
+    }
+
+    const submenuItems = submenu.querySelectorAll('li');
+    for (const submenuItem of submenuItems) {
+        submenuItem.classList.remove('ant-menu-item-selected');
+    }
+
+    currentProfileMenuItem.classList.add('ant-menu-item-selected');
+}
+
 // Track the current page via MutationObserver
 const trackPage = () => {
     const observer = new MutationObserver(() => {
@@ -388,6 +407,7 @@ const trackPage = () => {
 
         if (!menuAdded) {
             addMenu();
+            highlightCurrentProfile();
         }
 
         if (location.pathname === '/questtracker') {
