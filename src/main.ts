@@ -1,6 +1,22 @@
 let lastPage = '';
 let menuAdded = false;
-const profiles = localStorage.getItem('profiles') || '{}';
+const profilesKey = 'sc_profiles';
+const currentProfileKey = 'sc_currentProfile';
+
+// TODO: Remove this once all users have been migrated to the new key
+let profiles = localStorage.getItem('profiles');
+const currentProfile = localStorage.getItem('currentProfile');
+if (profiles) {
+    localStorage.setItem(profilesKey, profiles);
+    localStorage.removeItem('profiles');
+}
+
+if (currentProfile) {
+    localStorage.setItem(currentProfileKey, currentProfile);
+    localStorage.removeItem('currentProfile');
+}
+
+profiles = localStorage.getItem(profilesKey) || '{}';
 
 const localStore = localStorage.setItem;
 
@@ -26,7 +42,7 @@ const questTracker = async () => {
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const currentProfile = localStorage.getItem('currentProfile') || 'default';
+        const currentProfile = localStorage.getItem(currentProfileKey) || 'default';
         const timestamp = new Date().toLocaleString().replace(/\/|,|:|\s/g, '-');
         a.href = url;
         a.download = `questData-${currentProfile}-${timestamp}.json`;
@@ -106,11 +122,11 @@ const questTracker = async () => {
     clearButton.addEventListener('click', () => {
         localStorage.removeItem('questData');
         // Also clear current profile data
-        const currentProfile = localStorage.getItem('currentProfile');
+        const currentProfile = localStorage.getItem(currentProfileKey);
         if (currentProfile) {
-            const profiles = JSON.parse(localStorage.getItem('profiles') || '{}');
+            const profiles = JSON.parse(localStorage.getItem(profilesKey) || '{}');
             profiles[currentProfile].questData = {};
-            localStorage.setItem('profiles', JSON.stringify(profiles));
+            localStorage.setItem(profilesKey, JSON.stringify(profiles));
         }
 
         // Reload page
@@ -122,7 +138,7 @@ const questTracker = async () => {
 
 const addProfiles = (submenu: HTMLUListElement) => {
     // For each profile, add a submenu item
-    const profiles = JSON.parse(localStorage.getItem('profiles') || '{}');
+    const profiles = JSON.parse(localStorage.getItem(profilesKey) || '{}');
 
     Object.keys(profiles).forEach(profileName => {
         // Prevent adding the same profile multiple times
@@ -150,7 +166,7 @@ const addProfiles = (submenu: HTMLUListElement) => {
 
         profileNameSpan.addEventListener('click', event => {
             event.preventDefault();
-            localStorage.setItem('currentProfile', profileName);
+            localStorage.setItem(currentProfileKey, profileName);
 
             // Load quest data
             const profile = profiles[profileName];
@@ -188,15 +204,15 @@ const addProfiles = (submenu: HTMLUListElement) => {
         deleteButton.addEventListener('click', event => {
             event.stopPropagation();
             if (confirm(`Are you sure you want to delete profile "${profileName}"?`)) {
-                const newProfiles = JSON.parse(localStorage.getItem('profiles') || '{}');
+                const newProfiles = JSON.parse(localStorage.getItem(profilesKey) || '{}');
                 delete newProfiles[profileName];
-                localStorage.setItem('profiles', JSON.stringify(newProfiles));
+                localStorage.setItem(profilesKey, JSON.stringify(newProfiles));
                 submenu.removeChild(submenuItem);
 
                 // If the deleted profile is the current profile, clear the current profile
-                const currentProfile = localStorage.getItem('currentProfile');
+                const currentProfile = localStorage.getItem(currentProfileKey);
                 if (currentProfile === profileName) {
-                    localStorage.removeItem('currentProfile');
+                    localStorage.removeItem(currentProfileKey);
                     localStorage.removeItem('questData');
                     location.reload();
                 }
@@ -285,7 +301,7 @@ const addSubMenu = (menu: HTMLElement) => {
             const questData = localStorage.getItem('questData') || '{}';
             const newProfile = newProfiles[profileName];
             newProfile.questData = JSON.parse(questData);
-            localStorage.setItem('profiles', JSON.stringify(newProfiles));
+            localStorage.setItem(profilesKey, JSON.stringify(newProfiles));
 
             addProfiles(submenu);
 
@@ -382,19 +398,19 @@ const trackQuestData = () => {
     const localStoreHandler = function (event: any) {
         if (event.key === 'questData') {
             // Update current profile's quest data
-            const currentProfile = localStorage.getItem('currentProfile');
+            const currentProfile = localStorage.getItem(currentProfileKey);
             if (!currentProfile) {
                 return;
             }
 
-            const profiles = JSON.parse(localStorage.getItem('profiles') || '{}');
+            const profiles = JSON.parse(localStorage.getItem(profilesKey) || '{}');
             const profile = profiles[currentProfile];
             if (!profile) {
                 return;
             }
 
             profile.questData = JSON.parse(event.value);
-            localStorage.setItem('profiles', JSON.stringify(profiles));
+            localStorage.setItem(profilesKey, JSON.stringify(profiles));
         }
     };
 
