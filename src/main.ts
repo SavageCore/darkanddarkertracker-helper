@@ -105,6 +105,15 @@ const questTracker = async () => {
                 reader.onload = () => {
                     const data = reader.result as string;
                     localStorage.setItem('questData', data);
+
+                    const currentProfile = localStorage.getItem(currentProfileKey);
+                    if (currentProfile) {
+                        const profiles = JSON.parse(localStorage.getItem(profilesKey) || '{}');
+                        profiles[currentProfile].questData = JSON.parse(data);
+                        localStorage.setItem(profilesKey, JSON.stringify(profiles));
+                    }
+
+                    location.reload();
                 }
                 reader.readAsText(file);
             }
