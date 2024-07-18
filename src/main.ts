@@ -26,8 +26,10 @@ const questTracker = async () => {
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
+        const currentProfile = localStorage.getItem('currentProfile') || 'default';
+        const timestamp = new Date().toLocaleString().replace(/\/|,|:|\s/g, '-');
         a.href = url;
-        a.download = 'questData.json';
+        a.download = `questData-${currentProfile}-${timestamp}.json`;
         a.click();
         URL.revokeObjectURL(url);
     }
