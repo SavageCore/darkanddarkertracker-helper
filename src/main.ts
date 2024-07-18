@@ -4,19 +4,19 @@ const profilesKey = 'sc_profiles';
 const currentProfileKey = 'sc_currentProfile';
 
 // TODO: Remove this once all users have been migrated to the new key
-let profiles = localStorage.getItem('profiles');
-const currentProfile = localStorage.getItem('currentProfile');
-if (profiles) {
-    localStorage.setItem(profilesKey, profiles);
+const oldProfiles = localStorage.getItem('profiles');
+const oldCurrentProfile = localStorage.getItem('currentProfile');
+if (oldProfiles) {
+    localStorage.setItem(profilesKey, oldProfiles);
     localStorage.removeItem('profiles');
 }
 
-if (currentProfile) {
-    localStorage.setItem(currentProfileKey, currentProfile);
+if (oldCurrentProfile) {
+    localStorage.setItem(currentProfileKey, oldCurrentProfile);
     localStorage.removeItem('currentProfile');
 }
 
-profiles = localStorage.getItem(profilesKey) || '{}';
+const profiles = localStorage.getItem(profilesKey) || '{}';
 
 const localStore = localStorage.setItem;
 
