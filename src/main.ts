@@ -173,7 +173,7 @@ const addProfiles = (submenu: HTMLUListElement) => {
         submenuItem.appendChild(submenuItemContent);
         submenu.appendChild(submenuItem);
 
-        profileNameSpan.addEventListener('click', event => {
+        submenuItem.addEventListener('click', event => {
             event.preventDefault();
             localStorage.setItem(currentProfileKey, profileName);
 
