@@ -175,14 +175,21 @@ const addProfiles = (submenu: HTMLUListElement) => {
 
         submenuItem.addEventListener('click', event => {
             event.preventDefault();
-            localStorage.setItem(currentProfileKey, profileName);
+            try {
+                const profile = profiles[profileName];
 
-            // Load quest data
-            const profile = profiles[profileName];
-            localStorage.setItem('questData', JSON.stringify(profile.questData));
+                localStorage.setItem(currentProfileKey, profileName);
+                localStorage.setItem('questData', JSON.stringify(profile.questData));
+                localStorage.setItem('filteredInfo', JSON.stringify(profile.filteredInfo || {}));
+                localStorage.setItem('questPagination', JSON.stringify(profile.questPagination || {}));
+                localStorage.setItem('showAvailableOnly', JSON.stringify(profile.showAvailableOnly || false));
+                localStorage.setItem('sortedInfo', JSON.stringify(profile.sortedInfo || {}));
 
-            // Reload page
-            location.reload();
+                // Reload page
+                location.reload();
+            } catch (error) {
+                console.error('Error setting profile data:', error);
+            }
         });
 
         // Add delete icon
@@ -429,21 +436,46 @@ const trackPage = () => {
 
 const trackQuestData = () => {
     const localStoreHandler = function (event: any) {
-        if (event.key === 'questData') {
-            // Update current profile's quest data
-            const currentProfile = localStorage.getItem(currentProfileKey);
-            if (!currentProfile) {
-                return;
-            }
+        // Handle local storage updates
+        const currentProfile = localStorage.getItem(currentProfileKey);
+        if (!currentProfile) {
+            return;
+        }
 
-            const profiles = JSON.parse(localStorage.getItem(profilesKey) || '{}');
-            const profile = profiles[currentProfile];
-            if (!profile) {
-                return;
-            }
+        const profiles = JSON.parse(localStorage.getItem(profilesKey) || '{}');
+        const profile = profiles[currentProfile];
+        if (!profile) {
+            return;
+        }
 
-            profile.questData = JSON.parse(event.value);
-            localStorage.setItem(profilesKey, JSON.stringify(profiles));
+        switch (event.key) {
+            case 'questData':
+                // Update current profile's quest data
+                profile.questData = JSON.parse(event.value);
+                localStorage.setItem(profilesKey, JSON.stringify(profiles));
+                break;
+            case 'questPagination':
+                // Update current profile's quest pagination
+                profile.questPagination = JSON.parse(event.value);
+                localStorage.setItem(profilesKey, JSON.stringify(profiles));
+                break;
+            case 'filteredInfo':
+                // Update current profile's quest filters
+                profile.filteredInfo = JSON.parse(event.value);
+                localStorage.setItem(profilesKey, JSON.stringify(profiles));
+                break;
+            case 'sortedInfo':
+                // Update current profile's quest sorting
+                profile.sortedInfo = JSON.parse(event.value);
+                localStorage.setItem(profilesKey, JSON.stringify(profiles));
+                break;
+            case 'showAvailableOnly':
+                // Update current profile's show available only setting
+                profile.showAvailableOnly = JSON.parse(event.value);
+                localStorage.setItem(profilesKey, JSON.stringify(profiles));
+                break;
+            default:
+                break;
         }
     };
 
