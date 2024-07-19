@@ -303,7 +303,6 @@ const addSubMenu = (menu: HTMLElement) => {
     submenuItemLink.addEventListener('click', () => {
         const profileName = prompt('Enter profile name');
         if (profileName) {
-
             const newProfiles = JSON.parse(profiles);
             newProfiles[profileName] = {};
 
@@ -313,7 +312,12 @@ const addSubMenu = (menu: HTMLElement) => {
             newProfile.questData = JSON.parse(questData);
             localStorage.setItem(profilesKey, JSON.stringify(newProfiles));
 
+            // Set current profile
+            localStorage.setItem(currentProfileKey, profileName);
+
             addProfiles(submenu);
+
+            highlightCurrentProfile();
 
             // Re-show submenu
             submenu.classList.toggle('ant-menu-hidden');
